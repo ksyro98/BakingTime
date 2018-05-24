@@ -1,0 +1,9 @@
+<resources>
+    <string name="app_name">Baking Time</string>
+
+    <string name="ingredients">Ingredients</string>
+    <string name="previous">Previous</string>
+    <string name="next">Next</string>
+    <string name="error">An unexpected error has occurred. \nPlease try again</string>
+    <string name="try_again">Try again</string>
+</resources>
