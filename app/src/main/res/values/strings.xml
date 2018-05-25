@@ -6,6 +6,6 @@
     <string name="next">Next</string>
     <string name="error">An unexpected error has occurred. \nPlease try again</string>
     <string name="try_again">Try again</string>
-    <string name="appwidget_text">EXAMPLE</string>
+    <string name="appwidget_text">Ingredient test</string>
     <string name="add_widget">Add widget</string>
 </resources>
