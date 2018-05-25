@@ -252,7 +252,8 @@ public class StepFragment extends Fragment{
 }
 
 
-//TODO ExoPlayer (almost done!)
+//TODO ExoPlayer (ful screen on rotation)
 //TODO Widget
+//TODO Master template flow
 //TODO Espresso
 //TODO UI
