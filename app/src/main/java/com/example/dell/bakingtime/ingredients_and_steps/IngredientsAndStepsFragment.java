@@ -2,7 +2,9 @@ package com.example.dell.bakingtime.ingredients_and_steps;
 
 import android.content.Intent;
 import android.os.Bundle;
+import android.os.Parcelable;
 import android.support.v4.app.Fragment;
+import android.support.v4.app.FragmentManager;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
@@ -13,6 +15,8 @@ import android.view.ViewGroup;
 import com.example.dell.bakingtime.DetailsActivity;
 import com.example.dell.bakingtime.R;
 import com.example.dell.bakingtime.Recipe.Recipe;
+import com.example.dell.bakingtime.StepFragment;
+import com.example.dell.bakingtime.ingredients_list.IngredientsFragment;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
@@ -26,6 +30,7 @@ public class IngredientsAndStepsFragment extends Fragment implements Ingredients
     private static final String TAG = IngredientsAndStepsFragment.class.getSimpleName();
     public static final String INTENT_RECIPE = "recipe";
     public static final String INTENT_POSITION = "position";
+    private boolean smallScreen;
 
 
     @Override
@@ -52,11 +57,38 @@ public class IngredientsAndStepsFragment extends Fragment implements Ingredients
         this.recipe = recipe;
     }
 
+    public void setSmallScreen(boolean smallScreen){
+        this.smallScreen = smallScreen;
+    }
+
     @Override
     public void onItemClick(int position) {
-        Intent intent = new Intent(getActivity(), DetailsActivity.class);
-        intent.putExtra(INTENT_RECIPE, recipe);
-        intent.putExtra(INTENT_POSITION, position);
-        getActivity().startActivity(intent);
+        if(smallScreen) {
+            Intent intent = new Intent(getActivity(), DetailsActivity.class);
+            intent.putExtra(INTENT_RECIPE, (Parcelable) recipe);
+            intent.putExtra(INTENT_POSITION, position);
+            getActivity().startActivity(intent);
+        }
+        else{
+            Fragment fragment;
+            if(position == 0){
+                fragment = new IngredientsFragment();
+                ((IngredientsFragment) fragment).setIngredients(recipe.getIngredients());
+                ((IngredientsFragment) fragment).setSmallScreen(false);
+            }
+            else{
+                fragment = new StepFragment();
+                ((StepFragment) fragment).setPosition(position);
+                ((StepFragment) fragment).setStep(recipe.getSteps().get(position-1));
+                ((StepFragment) fragment).setIsLastStep(position == recipe.getSteps().size());
+                ((StepFragment) fragment).setSmallScreen(false);
+            }
+
+
+            FragmentManager fragmentManager = getActivity().getSupportFragmentManager();
+            fragmentManager.beginTransaction()
+                    .replace(R.id.detail_container, fragment)
+                    .commit();
+        }
     }
 }

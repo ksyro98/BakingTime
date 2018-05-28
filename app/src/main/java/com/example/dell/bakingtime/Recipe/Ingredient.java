@@ -4,18 +4,12 @@ import android.os.Parcel;
 import android.os.Parcelable;
 import android.support.annotation.IntDef;
 
+import java.io.Serializable;
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
+import java.util.Objects;
 
-public class Ingredient implements Parcelable{
-
-    /*public static final int CUP = 0;
-    public static final int TBLSP = 1;
-    public static final int TSP = 2;
-    public static final int K = 3;
-    public static final int G = 4;
-    public static final int OZ = 5;
-    public static final int UNIT = 6;*/
+public class Ingredient implements Parcelable, Serializable{
 
     public static final String CUP_STRING = "CUP";
     public static final String TBLSP_STRING = "TBLSP";
@@ -90,8 +84,19 @@ public class Ingredient implements Parcelable{
         }
     };
 
-    /*@Override
+
+    public boolean compare(Ingredient ingredientToCompare){
+        if(!this.measure.equals(ingredientToCompare.measure))
+            return false;
+        if(!this.name.equals(ingredientToCompare.name))
+            return false;
+        if(this.quantity != ingredientToCompare.quantity)
+            return false;
+        return true;
+    }
+
+    @Override
     public String toString() {
-        return String.valueOf(quantity) + "_" + String.valueOf(measure) + "_" + String.valueOf(name);
-    }*/
+        return this.name + " [" + String.valueOf(this.quantity) + " " + this.measure+"]";
+    }
 }

@@ -3,7 +3,9 @@ package com.example.dell.bakingtime.Recipe;
 import android.os.Parcel;
 import android.os.Parcelable;
 
-public class Step implements Parcelable{
+import java.io.Serializable;
+
+public class Step implements Parcelable, Serializable{
 
     private int id;
     private String shortDescription;
@@ -93,4 +95,18 @@ public class Step implements Parcelable{
             return new Step[size];
         }
     };
+
+    public boolean compare(Step stepToCompare){
+        if(this.id != stepToCompare.id)
+            return false;
+        if(!this.shortDescription.equals(stepToCompare.shortDescription))
+            return false;
+        if(!this.longDescription.equals(stepToCompare.longDescription))
+            return false;
+        if(!this.videoUrl.equals(stepToCompare.videoUrl))
+            return false;
+        if(!this.thumbnailUrl.equals(stepToCompare.thumbnailUrl))
+            return false;
+        return true;
+    }
 }

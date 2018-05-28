@@ -4,9 +4,10 @@ package com.example.dell.bakingtime.Recipe;
 import android.os.Parcel;
 import android.os.Parcelable;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 
-public class Recipe implements Parcelable{
+public class Recipe implements Parcelable, Serializable{
 
     private int id;
     private String name;
@@ -22,6 +23,25 @@ public class Recipe implements Parcelable{
         this.image = image;
         this.ingredients = ingredients;
         this.steps = steps;
+    }
+
+    public Recipe(Parcel in) {
+        id = in.readInt();
+        name = in.readString();
+        servings = in.readInt();
+        image = in.readString();
+        if (in.readByte() == 0x01) {
+            ingredients = new ArrayList<Ingredient>();
+            in.readList(ingredients, Ingredient.class.getClassLoader());
+        } else {
+            ingredients = null;
+        }
+        if (in.readByte() == 0x01) {
+            steps = new ArrayList<Step>();
+            in.readList(steps, Step.class.getClassLoader());
+        } else {
+            steps = null;
+        }
     }
 
     public int getId() {
@@ -72,24 +92,6 @@ public class Recipe implements Parcelable{
         this.steps = steps;
     }
 
-    protected Recipe(Parcel in) {
-        id = in.readInt();
-        name = in.readString();
-        servings = in.readInt();
-        image = in.readString();
-        if (in.readByte() == 0x01) {
-            ingredients = new ArrayList<Ingredient>();
-            in.readList(ingredients, Ingredient.class.getClassLoader());
-        } else {
-            ingredients = null;
-        }
-        if (in.readByte() == 0x01) {
-            steps = new ArrayList<Step>();
-            in.readList(steps, Step.class.getClassLoader());
-        } else {
-            steps = null;
-        }
-    }
 
     @Override
     public int describeContents() {
@@ -129,7 +131,7 @@ public class Recipe implements Parcelable{
         }
     };
 
-    /*@Override
+    @Override
     public String toString() {
         return String.valueOf(id) + "&"
                 + name + "&"
@@ -137,5 +139,23 @@ public class Recipe implements Parcelable{
                 + image + "&"
                 + ingredients.toString() + "&"
                 + steps.toString();
-    }*/
+    }
+
+    public boolean compare(Recipe recipeToCompare){
+        if(this.getId() != recipeToCompare.getId())
+            return false;
+        if(!this.getName().equals(recipeToCompare.getName()))
+            return false;
+        if(this.servings != recipeToCompare.servings)
+            return false;
+        if(!this.getImage().equals(recipeToCompare.getImage()))
+            return false;
+        for(int i=0; i<ingredients.size(); i++)
+            if(!ingredients.get(i).compare(recipeToCompare.ingredients.get(i)))
+                return false;
+        for(int i=0; i<steps.size(); i++)
+            if(!steps.get(i).compare(recipeToCompare.steps.get(i)))
+                return false;
+        return true;
+    }
 }

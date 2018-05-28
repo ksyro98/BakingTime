@@ -9,6 +9,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
+import android.widget.LinearLayout;
 
 import com.example.dell.bakingtime.R;
 import com.example.dell.bakingtime.Recipe.Ingredient;
@@ -25,10 +26,11 @@ public class IngredientsFragment extends Fragment {
     @BindView(R.id.ingredients_recycler_view) RecyclerView ingredientsRecyclerView;
     @BindView(R.id.ingredients_previous_button) Button ingredientPreviousButton;
     @BindView(R.id.ingredients_next_button) Button ingredientsNextButton;
+    @BindView(R.id.linear_layout) LinearLayout linearLayout;
 
     private OnButtonClickListenerIngredients callbackActivity;
     private ArrayList<Ingredient> ingredients = new ArrayList<>();
-
+    private boolean smallScreen = true;
 
     public interface OnButtonClickListenerIngredients {
         void onButtonClickIngredients();
@@ -49,14 +51,20 @@ public class IngredientsFragment extends Fragment {
         ingredientsRecyclerView.setAdapter(ingredientsListAdapter);
 
 
-        ingredientPreviousButton.setEnabled(false);
+        if(!smallScreen){
+            hideButtons();
+        }
+        else {
+            showButtons();
+            ingredientPreviousButton.setEnabled(false);
 
-        ingredientsNextButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                callbackActivity.onButtonClickIngredients();
-            }
-        });
+            ingredientsNextButton.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
+                    callbackActivity.onButtonClickIngredients();
+                }
+            });
+        }
 
         return view;
     }
@@ -74,5 +82,21 @@ public class IngredientsFragment extends Fragment {
 
     public void setIngredients(ArrayList<Ingredient> ingredients){
         this.ingredients = ingredients;
+    }
+
+    public void setSmallScreen(boolean smallScreen){
+        this.smallScreen = smallScreen;
+    }
+
+    private void hideButtons(){
+        ingredientsNextButton.setVisibility(View.GONE);
+        ingredientPreviousButton.setVisibility(View.GONE);
+        linearLayout.setVisibility(View.GONE);
+    }
+
+    private void showButtons(){
+        ingredientsNextButton.setVisibility(View.VISIBLE);
+        ingredientPreviousButton.setVisibility(View.VISIBLE);
+        linearLayout.setVisibility(View.VISIBLE);
     }
 }

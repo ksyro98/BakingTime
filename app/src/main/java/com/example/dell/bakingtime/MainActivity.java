@@ -1,6 +1,7 @@
 package com.example.dell.bakingtime;
 
 import android.content.Intent;
+import android.os.Parcelable;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.widget.LinearLayoutManager;
@@ -39,7 +40,7 @@ public class MainActivity extends AppCompatActivity implements BakingAdapter.Cli
 
     private ArrayList<Recipe> recipeArrayList = new ArrayList<>();
     private BakingAdapter bakingAdapter;
-    public static final String INTENT_RECIPE = "recipe";
+    public static final String INTENT_RECIPE = "recipe_main";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -70,11 +71,12 @@ public class MainActivity extends AppCompatActivity implements BakingAdapter.Cli
     @Override
     public void onItemClick(int recipeIndex) {
         Intent intent = new Intent(this, IngredientsAndStepsActivity.class);
-        intent.putExtra(INTENT_RECIPE, recipeArrayList.get(recipeIndex));
+        intent.putExtra(INTENT_RECIPE, (Parcelable) recipeArrayList.get(recipeIndex));
         this.startActivity(intent);
     }
 
     private void loadUI(){
+        showProgressBar();
         RequestQueue requestQueue = Volley.newRequestQueue(this);
         JsonArrayRequest jsonArrayRequest = new JsonArrayRequest(Request.Method.GET, RECIPE_URL, null,
                 new Response.Listener<JSONArray>() {

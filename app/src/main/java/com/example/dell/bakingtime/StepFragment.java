@@ -10,6 +10,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
+import android.widget.LinearLayout;
 import android.widget.TextView;
 
 
@@ -42,6 +43,7 @@ public class StepFragment extends Fragment{
     @BindView(R.id.step_previous_button) Button stepPreviousButton;
     @BindView(R.id.step_next_button) Button stepNextButton;
     @BindView(R.id.player_view) PlayerView playerView;
+    @BindView(R.id.linear_layout) LinearLayout linearLayout;
 
     private int position;
     private Step step;
@@ -53,6 +55,7 @@ public class StepFragment extends Fragment{
     private static boolean playWhenReady = true;
     private MediaSessionCompat mediaSessionCompat;
     private ComponentListener componentListener = new ComponentListener();
+    private boolean smallScreen;
 
     public final static String TAG = StepFragment.class.getSimpleName();
 
@@ -65,25 +68,30 @@ public class StepFragment extends Fragment{
         descriptionTextView.setText(step.getLongDescription());
 
 
-        stepPreviousButton.setOnClickListener(new View.OnClickListener(){
-            @Override
-            public void onClick(View view) {
-                activityCallback.onButtonClickStep(position-1);
-            }
-        });
 
-
-        if(isLastStep) {
-            stepNextButton.setEnabled(false);
+        if(!smallScreen){
+            hideButtons();
         }
         else {
-            stepNextButton.setOnClickListener(new View.OnClickListener() {
+            stepPreviousButton.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View view) {
-                    releasePlayer();
-                    activityCallback.onButtonClickStep(position + 1);
+                    activityCallback.onButtonClickStep(position - 1);
                 }
             });
+
+
+            if (isLastStep) {
+                stepNextButton.setEnabled(false);
+            } else {
+                stepNextButton.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View view) {
+                        releasePlayer();
+                        activityCallback.onButtonClickStep(position + 1);
+                    }
+                });
+            }
         }
 
         initializePlayer();
@@ -249,11 +257,28 @@ public class StepFragment extends Fragment{
     public interface OnButtonClickListenerStep{
         void onButtonClickStep(int position);
     }
+
+    public void setSmallScreen(boolean smallScreen){
+        this.smallScreen = smallScreen;
+    }
+
+    private void hideButtons(){
+        stepNextButton.setVisibility(View.GONE);
+        stepPreviousButton.setVisibility(View.GONE);
+        linearLayout.setVisibility(View.GONE);
+    }
+
+    private void showButtons(){
+        stepNextButton.setVisibility(View.VISIBLE);
+        stepPreviousButton.setVisibility(View.VISIBLE);
+        linearLayout.setVisibility(View.VISIBLE);
+    }
 }
 
 
-//TODO ExoPlayer (ful screen on rotation)
-//TODO Widget
+//TODO ExoPlayer (full screen on rotation)
+//TODO Widget    (weird)
 //TODO Master template flow
 //TODO Espresso
+//TODO Rotation
 //TODO UI
