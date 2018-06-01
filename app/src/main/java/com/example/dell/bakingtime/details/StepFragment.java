@@ -57,47 +57,61 @@ public class StepFragment extends Fragment{
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_step, container, false);
 
-        ButterKnife.bind(this, view);
+        boolean isPortrait = !(view.findViewById(R.id.description_text_view) == null);
 
-        if(step == null){
-            step = savedInstanceState.getParcelable(BUNDLE_KEY_STEP);
-        }
+        //if the device is in portrait mode the ExoPlayer is displayed with a textView containing a description of the step
+        //and the next and previous buttons
+        if(isPortrait) {
+            ButterKnife.bind(this, view);
 
-        descriptionTextView.setText(step.getLongDescription());
+            if (step == null) {
+                step = savedInstanceState.getParcelable(BUNDLE_KEY_STEP);
+            }
 
-
-
-        if(!smallScreen){
-            hideButtons();
-        }
-        else {
-            showButtons();
-            stepPreviousButton.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View view) {
-                    activityCallback.onButtonClickStep(position - 1);
-                }
-            });
+            descriptionTextView.setText(step.getLongDescription());
 
 
-            if (isLastStep) {
-                stepNextButton.setEnabled(false);
+            if (!smallScreen) {
+                hideButtons();
             } else {
-                stepNextButton.setOnClickListener(new View.OnClickListener() {
+                showButtons();
+                stepPreviousButton.setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View view) {
-                        releasePlayer();
-                        activityCallback.onButtonClickStep(position + 1);
+                        activityCallback.onButtonClickStep(position - 1);
                     }
                 });
-            }
-        }
 
-        initializePlayer();
+
+                if (isLastStep) {
+                    stepNextButton.setEnabled(false);
+                } else {
+                    stepNextButton.setOnClickListener(new View.OnClickListener() {
+                        @Override
+                        public void onClick(View view) {
+                            releasePlayer();
+                            activityCallback.onButtonClickStep(position + 1);
+                        }
+                    });
+                }
+            }
+
+            initializePlayer();
+        }
+        //if the device is in landscape only the ExoPlayer is displayed in full screen
+        else{
+            playerView = view.findViewById(R.id.player_view);
+            initializePlayer();
+        }
 
         return view;
     }
 
+
+    /**
+     * Checks if the Activity that contains this Fragment implements OnButtonClickListenerStep.
+     * In addition it creates a new media session.
+     */
     @Override
     public void onAttach(Context context) {
         super.onAttach(context);
@@ -127,28 +141,11 @@ public class StepFragment extends Fragment{
         mediaSessionCompat.setActive(true);
     }
 
-    @Override
-    public void onDestroyView() {
-        super.onDestroyView();
-        releasePlayer();
-        if(mediaSessionCompat != null) {
-            mediaSessionCompat.setActive(false);
-        }
-    }
 
-    public void setStep(Step step){
-        this.step = step;
-    }
-
-    public void setPosition(int position){
-        this.position = position;
-    }
-
-    public void setIsLastStep(boolean isLastStep){
-        this.isLastStep = isLastStep;
-    }
-
-
+    /**
+     * Gets the uri for the video, creates a new ExoPlayer Instance and a new MediaSource instance
+     * and then uses these to initialize the ExoPlayer and start the video.
+     */
     public void initializePlayer(){
         if(player == null){
             Uri uri;
@@ -159,8 +156,6 @@ public class StepFragment extends Fragment{
                 uri = Uri.parse(step.getThumbnailUrl());
             }
             else{
-
-                //TODO add placeholder
                 return;
             }
 
@@ -179,18 +174,25 @@ public class StepFragment extends Fragment{
         }
     }
 
+
+    /**
+     * Releases the ExoPlayer.
+     */
     public void releasePlayer(){
         if(player != null){
             playbackPosition = player.getCurrentPosition();
             currentWindow = player.getCurrentWindowIndex();
             playWhenReady = player.getPlayWhenReady();
-            //player.stop();
             player.removeListener(componentListener);
             player.release();
             player = null;
         }
     }
 
+
+    /**
+     * These methods are override to initialize or release the ExoPlayer.
+     */
     @Override
     public void onStart() {
         super.onStart();
@@ -222,6 +224,16 @@ public class StepFragment extends Fragment{
             releasePlayer();
         }
     }
+
+    @Override
+    public void onDestroyView() {
+        super.onDestroyView();
+        releasePlayer();
+        if(mediaSessionCompat != null) {
+            mediaSessionCompat.setActive(false);
+        }
+    }
+
 
     @Override
     public void onSaveInstanceState(Bundle outState) {
@@ -259,35 +271,48 @@ public class StepFragment extends Fragment{
         }
     }
 
+
+    /**
+     * An Interface used to change the Fragment in the Activity that contains the current Fragment
+     * when the next or previous button is clicked
+     */
     public interface OnButtonClickListenerStep{
         void onButtonClickStep(int position);
     }
 
+
+    /**
+     * setter
+     */
     public void setSmallScreen(boolean smallScreen){
         this.smallScreen = smallScreen;
     }
 
+    public void setStep(Step step){
+        this.step = step;
+    }
+
+    public void setPosition(int position){
+        this.position = position;
+    }
+
+    public void setIsLastStep(boolean isLastStep){
+        this.isLastStep = isLastStep;
+    }
+
+
+    /**
+     * These methods are used to change the visibility of the next and previous buttons.
+     */
     private void hideButtons(){
         stepNextButton.setVisibility(View.GONE);
         stepPreviousButton.setVisibility(View.GONE);
         linearLayout.setVisibility(View.GONE);
     }
 
-    private void showButtons(){
+    private void showButtons() {
         stepNextButton.setVisibility(View.VISIBLE);
         stepPreviousButton.setVisibility(View.VISIBLE);
         linearLayout.setVisibility(View.VISIBLE);
     }
-
-    public int getStepId(){
-        return step.getId();
-    }
 }
-
-
-//TODO ExoPlayer (full screen on rotation)
-//TODO Widget    (weird)
-//TODO Master template flow
-//TODO Espresso
-//TODO Rotation
-//TODO UI

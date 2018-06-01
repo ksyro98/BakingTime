@@ -17,14 +17,11 @@ import butterknife.ButterKnife;
 public class IngredientsAndStepsAdapter
         extends RecyclerView.Adapter<IngredientsAndStepsAdapter.IngredientsAndStepsViewHolder>{
 
-    //private Context context;
     private Recipe recipe;
     private ClickListener clickListener;
-    //private static final String TAG = IngredientsAndStepsAdapter.class.getSimpleName();
 
 
     IngredientsAndStepsAdapter(Recipe recipe, ClickListener clickListener){
-        //this.context = context;
         this.recipe = recipe;
         this.clickListener = clickListener;
     }

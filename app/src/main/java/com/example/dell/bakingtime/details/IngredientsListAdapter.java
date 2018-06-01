@@ -20,7 +20,7 @@ public class IngredientsListAdapter extends RecyclerView.Adapter<IngredientsList
 
     private ArrayList<Ingredient> ingredients;
 
-    public IngredientsListAdapter(ArrayList<Ingredient> ingredients){
+    IngredientsListAdapter(ArrayList<Ingredient> ingredients){
         this.ingredients = ingredients;
     }
 
@@ -53,7 +53,7 @@ public class IngredientsListAdapter extends RecyclerView.Adapter<IngredientsList
         @BindView(R.id.ingredient_name_text_view) TextView ingredientNameTextView;
         @BindView(R.id.ingredient_quantity_text_view) TextView ingredientQuantityTextView;
 
-        public IngredientsListViewHolder(View itemView) {
+        IngredientsListViewHolder(View itemView) {
             super(itemView);
 
             ButterKnife.bind(this, itemView);

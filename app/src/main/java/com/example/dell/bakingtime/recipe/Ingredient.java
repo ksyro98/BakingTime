@@ -7,24 +7,34 @@ import java.io.Serializable;
 
 public class Ingredient implements Parcelable, Serializable{
 
-    public static final String CUP_STRING = "CUP";
-    public static final String TBLSP_STRING = "TBLSP";
-    public static final String TSP_STRING = "TSP";
-    public static final String K_STRING = "K";
-    public static final String G_STRING = "G";
-    public static final String OZ_STRING = "OZ";
-    public static final String UNIT_STRING = "UNIT";
-
     private double quantity;
     private String measure;
     private String name;
 
+
+    /**
+     * Constructor
+     */
     public Ingredient(double quantity, String measure, String name){
         this.quantity = quantity;
         this.measure = measure;
         this.name = name;
     }
 
+
+    /**
+     * Constructor
+     */
+    private Ingredient(Parcel in) {
+        quantity = in.readDouble();
+        measure = in.readString();
+        name = in.readString();
+    }
+
+
+    /**
+     * getters
+     */
     public double getQuantity() {
         return quantity;
     }
@@ -37,24 +47,18 @@ public class Ingredient implements Parcelable, Serializable{
         return name;
     }
 
-    public void setQuantity(double quantity) {
-        this.quantity = quantity;
-    }
 
-    public void setMeasure(String measure) {
-        this.measure = measure;
-    }
-
+    /**
+     * setter
+     */
     public void setName(String name) {
         this.name = name;
     }
 
-    protected Ingredient(Parcel in) {
-        quantity = in.readDouble();
-        measure = in.readString();
-        name = in.readString();
-    }
 
+    /**
+     * parcelable methods
+     */
     @Override
     public int describeContents() {
         return 0;
@@ -81,13 +85,22 @@ public class Ingredient implements Parcelable, Serializable{
     };
 
 
-    public boolean compare(Ingredient ingredientToCompare){
-        if(!this.measure.equals(ingredientToCompare.measure))
+    /**
+     * Used instead of equals, because equals doesn't work as intended.
+     * I didn't override equals because the I should override hashCode() too.
+     * @param ingredientToCheck the ingredient to check if it is the same
+     * @return true if the ingredients are the same, false otherwise
+     */
+    boolean checkIfEqual(Ingredient ingredientToCheck){
+        if(!this.measure.equals(ingredientToCheck.measure)) {
             return false;
-        if(!this.name.equals(ingredientToCompare.name))
+        }
+        if(!this.name.equals(ingredientToCheck.name)) {
             return false;
-        if(this.quantity != ingredientToCompare.quantity)
+        }
+        if(this.quantity != ingredientToCheck.quantity) {
             return false;
+        }
         return true;
     }
 

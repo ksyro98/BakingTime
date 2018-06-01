@@ -12,52 +12,53 @@ public class Recipe implements Parcelable, Serializable{
     private int id;
     private String name;
     private int servings;
-    private String image;   //always null
     private ArrayList<Ingredient> ingredients = new ArrayList<>();
     private ArrayList<Step> steps = new ArrayList<>();
 
-    public Recipe(int id, String name,  int servings, String image, ArrayList<Ingredient> ingredients, ArrayList<Step> steps){
+
+    /**
+     * Constructor
+     */
+    public Recipe(int id, String name,  int servings, ArrayList<Ingredient> ingredients, ArrayList<Step> steps){
         this.id = id;
         this.name = name;
         this.servings = servings;
-        this.image = image;
         this.ingredients = ingredients;
         this.steps = steps;
     }
 
+
+    /**
+     * Constructor
+     */
     public Recipe(Parcel in) {
         id = in.readInt();
         name = in.readString();
         servings = in.readInt();
-        image = in.readString();
         if (in.readByte() == 0x01) {
-            ingredients = new ArrayList<Ingredient>();
+            ingredients = new ArrayList<>();
             in.readList(ingredients, Ingredient.class.getClassLoader());
         } else {
             ingredients = null;
         }
         if (in.readByte() == 0x01) {
-            steps = new ArrayList<Step>();
+            steps = new ArrayList<>();
             in.readList(steps, Step.class.getClassLoader());
         } else {
             steps = null;
         }
     }
 
+
+    /**
+     * getters
+     */
     public int getId() {
         return id;
     }
 
     public String getName() {
         return name;
-    }
-
-    public int getServings(){
-        return servings;
-    }
-
-    public String getImage(){
-        return image;
     }
 
     public ArrayList<Ingredient> getIngredients() {
@@ -68,6 +69,10 @@ public class Recipe implements Parcelable, Serializable{
         return steps;
     }
 
+
+    /**
+     * setters
+     */
     public void setId(int id) {
         this.id = id;
     }
@@ -76,23 +81,10 @@ public class Recipe implements Parcelable, Serializable{
         this.name = name;
     }
 
-    public void setServings(int servings){
-        this.servings = servings;
-    }
 
-    public void setImage(String image){
-        this.image = image;
-    }
-
-    public void setIngredients(ArrayList<Ingredient> ingredients) {
-        this.ingredients = ingredients;
-    }
-
-    public void setSteps(ArrayList<Step> steps) {
-        this.steps = steps;
-    }
-
-
+    /**
+     * parcelable methods
+     */
     @Override
     public int describeContents() {
         return 0;
@@ -103,7 +95,6 @@ public class Recipe implements Parcelable, Serializable{
         dest.writeInt(id);
         dest.writeString(name);
         dest.writeInt(servings);
-        dest.writeString(image);
         if (ingredients == null) {
             dest.writeByte((byte) (0x00));
         } else {
@@ -131,31 +122,42 @@ public class Recipe implements Parcelable, Serializable{
         }
     };
 
+
+    /**
+     * Used instead of equals, because equals doesn't work as intended.
+     * I didn't override equals because the I should override hashCode() too.
+     * @param recipeToCheck the recipe to check if it is the same
+     * @return true if the recipes are the same, false otherwise
+     */
+    public boolean checkIfEqual(Recipe recipeToCheck){
+        if(this.getId() != recipeToCheck.getId()) {
+            return false;
+        }
+        if(!this.getName().equals(recipeToCheck.getName())) {
+            return false;
+        }
+        if(this.servings != recipeToCheck.servings) {
+            return false;
+        }
+        for(int i=0; i<ingredients.size(); i++) {
+            if (!ingredients.get(i).checkIfEqual(recipeToCheck.ingredients.get(i))) {
+                return false;
+            }
+        }
+        for(int i=0; i<steps.size(); i++) {
+            if (!steps.get(i).checkIfEquals(recipeToCheck.steps.get(i))) {
+                return false;
+            }
+        }
+        return true;
+    }
+
     @Override
     public String toString() {
         return String.valueOf(id) + "&"
                 + name + "&"
                 + String.valueOf(servings) + "&"
-                + image + "&"
                 + ingredients.toString() + "&"
                 + steps.toString();
-    }
-
-    public boolean compare(Recipe recipeToCompare){
-        if(this.getId() != recipeToCompare.getId())
-            return false;
-        if(!this.getName().equals(recipeToCompare.getName()))
-            return false;
-        if(this.servings != recipeToCompare.servings)
-            return false;
-        if(!this.getImage().equals(recipeToCompare.getImage()))
-            return false;
-        for(int i=0; i<ingredients.size(); i++)
-            if(!ingredients.get(i).compare(recipeToCompare.ingredients.get(i)))
-                return false;
-        for(int i=0; i<steps.size(); i++)
-            if(!steps.get(i).compare(recipeToCompare.steps.get(i)))
-                return false;
-        return true;
     }
 }

@@ -12,8 +12,7 @@
         android:layout_marginLeft="8dp"
         android:layout_marginStart="8dp"
         android:textSize="18sp"
-        android:textColor="@android:color/black"
-        android:text="some text"/>
+        android:textColor="@android:color/black"/>
 
     <TextView
         android:id="@+id/ingredient_quantity_text_view"
@@ -21,7 +20,6 @@
         android:layout_height="wrap_content"
         android:layout_marginLeft="16dp"
         android:layout_marginStart="16dp"
-        android:text="some more text"
         android:textSize="18sp" />
 
 </LinearLayout>

@@ -32,6 +32,11 @@ public class IngredientsFragment extends Fragment {
     private ArrayList<Ingredient> ingredients = new ArrayList<>();
     private boolean smallScreen = true;
 
+
+    /**
+     * An Interface used to change the Fragment in the Activity that contains the current Fragment
+     * when the next or previous button is clicked
+     */
     public interface OnButtonClickListenerIngredients {
         void onButtonClickIngredients();
     }
@@ -42,7 +47,7 @@ public class IngredientsFragment extends Fragment {
 
         ButterKnife.bind(this, view);
 
-
+        //a RecyclerView is created
         LinearLayoutManager layoutManager = new LinearLayoutManager(getContext());
         ingredientsRecyclerView.setLayoutManager(layoutManager);
         ingredientsRecyclerView.setHasFixedSize(false);
@@ -51,6 +56,8 @@ public class IngredientsFragment extends Fragment {
         ingredientsRecyclerView.setAdapter(ingredientsListAdapter);
 
 
+        //in large screen devices the next and previous buttons shouldn't be visible
+        //in small screen devices the next and previous buttons should be visible
         if(!smallScreen){
             hideButtons();
         }
@@ -69,6 +76,10 @@ public class IngredientsFragment extends Fragment {
         return view;
     }
 
+
+    /**
+     * Checks if the Activity that contains the Fragment implements OnButtonClickListenerIngredients
+     */
     @Override
     public void onAttach(Context context) {
         super.onAttach(context);
@@ -80,6 +91,10 @@ public class IngredientsFragment extends Fragment {
         }
     }
 
+
+    /**
+     * setters
+     */
     public void setIngredients(ArrayList<Ingredient> ingredients){
         this.ingredients = ingredients;
     }
@@ -88,6 +103,10 @@ public class IngredientsFragment extends Fragment {
         this.smallScreen = smallScreen;
     }
 
+
+    /**
+     * These methods are used to change the visibility of the next and previous buttons.
+     */
     private void hideButtons(){
         ingredientsNextButton.setVisibility(View.GONE);
         ingredientPreviousButton.setVisibility(View.GONE);

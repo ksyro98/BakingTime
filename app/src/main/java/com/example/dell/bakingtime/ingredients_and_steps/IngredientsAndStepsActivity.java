@@ -29,7 +29,6 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
-import java.time.LocalDate;
 
 public class IngredientsAndStepsActivity extends AppCompatActivity
         implements IngredientsFragment.OnButtonClickListenerIngredients,
@@ -41,17 +40,22 @@ public class IngredientsAndStepsActivity extends AppCompatActivity
     private boolean isFavorite = false;
     private IngredientsAndStepsFragment ingredientsAndStepsFragment;
     private Fragment fragment;
+    private int stepId = -1;    //stepId = -1 represents the ingredients
+    private static boolean smallScreen;
+    //used for the savedInstance bundle
     private static final String SAVED_INSTANCE_STRING_KEY = "string_key";
     private static final String ROTATION = "rotation is done";
     private static final String SAVED_INSTANCE_INT_KEY = "int_key";
     public static final String FILE_NAME = "favorite_recipe_file";
-    private int stepId = -1;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_ingredients_and_steps);
 
+         smallScreen = findViewById(R.id.detail_container) == null;
+
+        //if the intent that started this activity is not null we get the recipe it contained
         Intent intent = getIntent();
         if (intent != null) {
             recipe = intent.getParcelableExtra(MainActivity.INTENT_RECIPE);
@@ -59,11 +63,13 @@ public class IngredientsAndStepsActivity extends AppCompatActivity
                 recipe = intent.getParcelableExtra(ListWidgetService.INTENT_RECIPE);
             }
 
+            //an ingredientsAndStepsFragment is created
             ingredientsAndStepsFragment = new IngredientsAndStepsFragment();
             ingredientsAndStepsFragment.setRecipe(recipe);
-            ingredientsAndStepsFragment.setSmallScreen(isSmallScreen());
+            ingredientsAndStepsFragment.setSmallScreen(smallScreen);
             ingredientsAndStepsFragment.setFragment(fragment);
 
+            //the title of the ActionBar is changed to display the recipe name and the back button is added
             if (recipe != null) {
                 ActionBar actionBar = getSupportActionBar();
                 if (actionBar != null) {
@@ -73,16 +79,17 @@ public class IngredientsAndStepsActivity extends AppCompatActivity
                     actionBar.setDisplayHomeAsUpEnabled(true);
                 }
             }
+
+            //checking if this recipe is the favorite recipe
             Recipe favoriteRecipe = readFile(FILE_NAME);
-            isFavorite = favoriteRecipe != null && favoriteRecipe.compare(recipe);
-
-            FragmentManager fragmentManager = getSupportFragmentManager();
-            fragmentManager.beginTransaction()
-                    .add(R.id.ingredients_steps_list_container, ingredientsAndStepsFragment)
-                    .commit();
+            isFavorite = favoriteRecipe != null && favoriteRecipe.checkIfEqual(recipe);
 
 
-            if(!isSmallScreen()){
+            if(!smallScreen){
+                //because master-detail flow is used when the app is running on large devices one more fragment is loaded
+                //this is an IngredientFragment or a StepFragment
+                FragmentManager fragmentManager = getSupportFragmentManager();
+                //savedInstanceState == null when the activity is first lunched, in this case the IngredientFragment is displayed
                 if(savedInstanceState == null) {
                     fragment = new IngredientsFragment();
                     ((IngredientsFragment) fragment).setIngredients(recipe.getIngredients());
@@ -92,6 +99,8 @@ public class IngredientsAndStepsActivity extends AppCompatActivity
                             .add(R.id.detail_container, fragment)
                             .commit();
                 }
+                //if the activity was destroyed and the recreated then the Fragment that was visible before the destruction is displayed
+                //this is happens because the id of the current step is stored on the savedInstanceState (-1 is stored if IngredientsFragment was the Fragment displayed before destruction)
                 else{
                     stepId = savedInstanceState.getInt(SAVED_INSTANCE_INT_KEY);
                     if(stepId == -1) {
@@ -118,6 +127,24 @@ public class IngredientsAndStepsActivity extends AppCompatActivity
         }
     }
 
+    /**
+     * The Fragment is replaced in onStart because when we navigate to this activity from another activity onCreate isn't called.
+     * This case can only occur in small screen devices.
+     */
+    @Override
+    protected void onStart() {
+        super.onStart();
+        if(smallScreen) {
+            FragmentManager fragmentManager = getSupportFragmentManager();
+            fragmentManager.beginTransaction()
+                    .replace(R.id.ingredients_steps_list_container, ingredientsAndStepsFragment)
+                    .commit();
+        }
+    }
+
+    /**
+     * Favorite activity has a white star.
+     */
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         getMenuInflater().inflate(R.menu.favorite_recipe, menu);
@@ -132,6 +159,10 @@ public class IngredientsAndStepsActivity extends AppCompatActivity
         return super.onCreateOptionsMenu(menu);
     }
 
+    /**
+     * The favorite activity is written on a file.
+     * This way when we set a new activity as favorite the old one is no longer favorite.
+     */
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()){
@@ -160,6 +191,9 @@ public class IngredientsAndStepsActivity extends AppCompatActivity
     }
 
 
+    /**
+     * Methods to write and read a file
+     */
     private void writeFile(String fileName){
         try {
             FileOutputStream fileOutputStream = this.openFileOutput(fileName, Context.MODE_PRIVATE);
@@ -199,21 +233,21 @@ public class IngredientsAndStepsActivity extends AppCompatActivity
         return null;
     }
 
+    /**
+     * This method is used to update the widget every time the favorite activity changes
+     */
     private void updateWidget(){
         ComponentName thisWidget = new ComponentName(this, IngredientsWidgetProvider.class);
-        AppWidgetManager appWidgetManager = AppWidgetManager.getInstance(this);//.updateAppWidget(thisWidget, remoteViews);
+        AppWidgetManager appWidgetManager = AppWidgetManager.getInstance(this);
         int[] appWidgetIds = appWidgetManager.getAppWidgetIds(thisWidget);
         appWidgetManager.notifyAppWidgetViewDataChanged(appWidgetIds, R.id.list_view);
     }
 
-    private boolean isSmallScreen(){
-        return findViewById(R.id.detail_container) == null;
-    }
 
-    //public void setStepId(int stepId){
-        //this.stepId = stepId;
-    //}
-
+    /**
+     * The fragments are removed to avoid having the same Fragment many times when the device is rotated.
+     * Also the id of the step which is visible is stored in the outState (-1 is stored if the IngredientFragment is visible).
+     */
     @Override
     protected void onSaveInstanceState(Bundle outState) {
         FragmentManager fragmentManager = getSupportFragmentManager();
@@ -221,7 +255,8 @@ public class IngredientsAndStepsActivity extends AppCompatActivity
                 .remove(ingredientsAndStepsFragment)
                 .commit();
 
-        if(!isSmallScreen()){
+
+        if(!smallScreen){
             outState.putInt(SAVED_INSTANCE_INT_KEY, stepId);
 
             fragmentManager.beginTransaction()
@@ -234,6 +269,11 @@ public class IngredientsAndStepsActivity extends AppCompatActivity
         super.onSaveInstanceState(outState);
     }
 
+    /**
+     * Overriding methods of IngredientsFragment.OnButtonClickListenerIngredients,
+     * StepFragment.OnButtonClickListenerStep and
+     * IngredientsAndStepsFragment.SendStepId.
+     */
     @Override
     public void onButtonClickIngredients() {
 

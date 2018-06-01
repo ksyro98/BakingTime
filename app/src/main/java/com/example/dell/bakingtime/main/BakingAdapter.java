@@ -18,18 +18,15 @@ import butterknife.ButterKnife;
 
 public class BakingAdapter extends RecyclerView.Adapter<BakingAdapter.BakingViewHolder>{
 
-    //private int numberOfItems;
     private ArrayList<Recipe> recipeArrayList;
-    //private Context context;
     private ClickListener clickListener;
 
 
-
-    public BakingAdapter(ArrayList<Recipe> recipeArrayList, ClickListener clickListener){
-        //this.context = context;
+    BakingAdapter(ArrayList<Recipe> recipeArrayList, ClickListener clickListener){
         this.recipeArrayList = recipeArrayList;
         this.clickListener = clickListener;
     }
+
 
     @Override
     public BakingViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
@@ -59,7 +56,7 @@ public class BakingAdapter extends RecyclerView.Adapter<BakingAdapter.BakingView
 
         @BindView(R.id.recycler_view_text_view) TextView recipeNameTextView;
 
-        public BakingViewHolder(View itemView) {
+        BakingViewHolder(View itemView) {
             super(itemView);
             itemView.setOnClickListener(this);
 

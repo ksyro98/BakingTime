@@ -13,6 +13,10 @@ public class Step implements Parcelable, Serializable{
     private String videoUrl;
     private String thumbnailUrl;
 
+
+    /**
+     * Constructor
+     */
     public Step(int id, String shortDescription, String longDescription, String videoUrl, String thumbnailUrl){
         this.id = id;
         this.shortDescription = shortDescription;
@@ -21,6 +25,10 @@ public class Step implements Parcelable, Serializable{
         this.thumbnailUrl = thumbnailUrl;
     }
 
+
+    /**
+     * getters
+     */
     public int getId() {
         return id;
     }
@@ -41,27 +49,15 @@ public class Step implements Parcelable, Serializable{
         return thumbnailUrl;
     }
 
+
+    /**
+     * setter
+     */
     public void setId(int id) {
         this.id = id;
     }
 
-    public void setShortDescription(String shortDescription) {
-        this.shortDescription = shortDescription;
-    }
-
-    public void setLongDescription(String longDescription) {
-        this.longDescription = longDescription;
-    }
-
-    public void setVideoUrl(String videoUrl) {
-        this.videoUrl = videoUrl;
-    }
-
-    public void setThumbnailUrl(String thumbnailUrl) {
-        this.thumbnailUrl = thumbnailUrl;
-    }
-
-    protected Step(Parcel in) {
+    private Step(Parcel in) {
         id = in.readInt();
         shortDescription = in.readString();
         longDescription = in.readString();
@@ -69,6 +65,9 @@ public class Step implements Parcelable, Serializable{
         thumbnailUrl = in.readString();
     }
 
+    /**
+     * parcelable methods
+     */
     @Override
     public int describeContents() {
         return 0;
@@ -96,17 +95,29 @@ public class Step implements Parcelable, Serializable{
         }
     };
 
-    public boolean compare(Step stepToCompare){
-        if(this.id != stepToCompare.id)
+
+    /**
+     * Used instead of equals, because equals doesn't work as intended.
+     * I didn't override equals because the I should override hashCode() too.
+     * @param stepToCheck the step to check if it is the same
+     * @return true if the ingredients are the same, false otherwise
+     */
+    boolean checkIfEquals(Step stepToCheck){
+        if(this.id != stepToCheck.id) {
             return false;
-        if(!this.shortDescription.equals(stepToCompare.shortDescription))
+        }
+        if(!this.shortDescription.equals(stepToCheck.shortDescription)) {
             return false;
-        if(!this.longDescription.equals(stepToCompare.longDescription))
+        }
+        if(!this.longDescription.equals(stepToCheck.longDescription)) {
             return false;
-        if(!this.videoUrl.equals(stepToCompare.videoUrl))
+        }
+        if(!this.videoUrl.equals(stepToCheck.videoUrl)) {
             return false;
-        if(!this.thumbnailUrl.equals(stepToCompare.thumbnailUrl))
+        }
+        if(!this.thumbnailUrl.equals(stepToCheck.thumbnailUrl)) {
             return false;
+        }
         return true;
     }
 }

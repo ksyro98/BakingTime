@@ -1,7 +1,6 @@
 package com.example.dell.bakingtime.details;
 
 import android.content.Intent;
-import android.support.annotation.VisibleForTesting;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v7.app.ActionBar;
@@ -9,7 +8,6 @@ import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 
 import com.example.dell.bakingtime.R;
-import com.example.dell.bakingtime.recipe.Ingredient;
 import com.example.dell.bakingtime.recipe.Recipe;
 import com.example.dell.bakingtime.ingredients_and_steps.IngredientsAndStepsFragment;
 
@@ -28,11 +26,13 @@ public class DetailsActivity extends AppCompatActivity implements
         setContentView(R.layout.activity_details);
 
 
+        //if the intent that started this activity is not null we get the recipe it contained
         Intent intent = getIntent();
         if(intent != null) {
             int position = intent.getIntExtra(IngredientsAndStepsFragment.INTENT_POSITION, 0);
             recipe = intent.getParcelableExtra(IngredientsAndStepsFragment.INTENT_RECIPE);
 
+            //the title of the ActionBar is changed to display the recipe name
             ActionBar actionBar = getSupportActionBar();
             if(actionBar != null) {
                 actionBar.setDisplayOptions(ActionBar.DISPLAY_SHOW_TITLE, ActionBar.DISPLAY_SHOW_TITLE);
@@ -41,6 +41,7 @@ public class DetailsActivity extends AppCompatActivity implements
                 actionBar.setDisplayHomeAsUpEnabled(false);
             }
 
+            //if position == 0 the IngredientsFragment is added, if position != 0 the StepFragment is added
             if (position == 0) {
                 fragment = new IngredientsFragment();
                 ((IngredientsFragment) fragment).setIngredients(recipe.getIngredients());
@@ -66,6 +67,11 @@ public class DetailsActivity extends AppCompatActivity implements
 
     }
 
+
+    /**
+     * If the IngredientsFragment is displayed the nextButton replaces the current fragment with a StepFragment
+     * that contains information about the first step.
+     */
     @Override
     public void onButtonClickIngredients() {
         StepFragment stepFragment = new StepFragment();
@@ -79,6 +85,12 @@ public class DetailsActivity extends AppCompatActivity implements
                 .commit();
     }
 
+
+    /**
+     * If the StepFragment is displayed the nextButton or previousButton replaces the current fragment with a StepFragment
+     * that contains information about the next or the previous step respectively (or with an IngredientFragment if the
+     * previous button is clicked from a StepFragment that contains information about the first step).
+     */
     @Override
     public void onButtonClickStep(int position) {
         if(position == 0){
@@ -117,6 +129,10 @@ public class DetailsActivity extends AppCompatActivity implements
         }
     }
 
+
+    /**
+     * The fragments are removed to avoid having the same Fragment many times when the device is rotated.
+     */
     @Override
     protected void onSaveInstanceState(Bundle outState) {
         FragmentManager fragmentManager = getSupportFragmentManager();

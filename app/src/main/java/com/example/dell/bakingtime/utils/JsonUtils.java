@@ -11,12 +11,17 @@ import org.json.JSONException;
 import java.util.ArrayList;
 
 public class JsonUtils {
+    /**
+     * Gets a recipe from a JSONArray.
+     * @param jsonArray the JSONArray to get the recipe
+     * @param id the index of the recipe in the JSONArray
+     * @return the recipe that we got from the JSONArray
+     */
     public static Recipe getRecipeFromJson(JSONArray jsonArray, int id){
         try {
             String recipeName = jsonArray.getJSONObject(id).getString("name");
             int recipeId = id + 1;
             int servings = jsonArray.getJSONObject(id).getInt("servings");
-            String image = jsonArray.getJSONObject(id).getString("image");
 
             JSONArray ingredientJSONArray = jsonArray.getJSONObject(id).getJSONArray("ingredients");
 
@@ -44,7 +49,7 @@ public class JsonUtils {
                 stepArrayList.add(new Step(stepId, shortDescription, description, videoURL, thumbnailURL));
             }
 
-            return new Recipe(recipeId, recipeName, servings, image, ingredientArrayList, stepArrayList);
+            return new Recipe(recipeId, recipeName, servings, ingredientArrayList, stepArrayList);
 
         } catch (JSONException e) {
             e.printStackTrace();

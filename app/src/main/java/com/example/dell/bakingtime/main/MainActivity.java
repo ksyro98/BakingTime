@@ -36,17 +36,17 @@ import butterknife.ButterKnife;
 
 public class MainActivity extends AppCompatActivity implements BakingAdapter.ClickListener {
 
-    private static final String RECIPE_URL = "https://d17h27t6h515a5.cloudfront.net/topher/2017/May/59121517_baking/baking.json";
     @BindView(R.id.baking_recycler_view) RecyclerView bakingRecyclerView;
     @BindView(R.id.progress_bar) ProgressBar progressBar;
     @BindView(R.id.error_text_view) TextView errorTextView;
     @BindView(R.id.error_button) Button errorButton;
 
-
     private ArrayList<Recipe> recipeArrayList = new ArrayList<>();
     private BakingAdapter bakingAdapter;
+    private static final String RECIPE_URL = "https://d17h27t6h515a5.cloudfront.net/topher/2017/May/59121517_baking/baking.json";
     public static final String INTENT_RECIPE = "recipe_main";
 
+    //for testing
     @Nullable private Recipe recipeClicked;
     @Nullable private SimpleIdlingResource idlingResource;
 
@@ -67,13 +67,15 @@ public class MainActivity extends AppCompatActivity implements BakingAdapter.Cli
         return recipeClicked;
     }
 
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+
         ButterKnife.bind(this);
 
-
+        //creating RecyclerView
         LinearLayoutManager linearLayoutManager = new LinearLayoutManager(this);
         bakingRecyclerView.setLayoutManager(linearLayoutManager);
         bakingRecyclerView.setHasFixedSize(true);
@@ -94,6 +96,12 @@ public class MainActivity extends AppCompatActivity implements BakingAdapter.Cli
     }
 
 
+    /**
+     * Overrides BakingAdapter.ClickListener onItemClick.
+     * This method starts an activity which contains more information about a recipe. The recipe is sent with the Intent.
+     *
+     * @param recipeIndex the recipe that was clicked
+     */
     @Override
     public void onItemClick(int recipeIndex) {
         Intent intent = new Intent(this, IngredientsAndStepsActivity.class);
@@ -102,6 +110,13 @@ public class MainActivity extends AppCompatActivity implements BakingAdapter.Cli
         this.startActivity(intent);
     }
 
+
+    /**
+     * Uses the volley library to download the JSON with the recipes.
+     * Then it gets the recipes from the JSON and saves them to the recipeArrayList.
+     * Finally it notifies the bakingAdapter for the data change which results int the recyclerView showing the correct data.
+     * This method also handles errors (in case there is no Internet connection) and set idlingResource to true if we are testing.
+     */
     private void loadUI(){
         showProgressBar();
         RequestQueue requestQueue = Volley.newRequestQueue(this);
@@ -139,6 +154,10 @@ public class MainActivity extends AppCompatActivity implements BakingAdapter.Cli
         requestQueue.add(jsonArrayRequest);
     }
 
+    /**
+     * The show methods are used to either show a ProgressBar (data loading), a RecyclerView (data is loaded) or an error
+     * message and a "try again" Button (error in loading data).
+     */
     private void showRecyclerView(){
         bakingRecyclerView.setVisibility(View.VISIBLE);
         progressBar.setVisibility(View.INVISIBLE);

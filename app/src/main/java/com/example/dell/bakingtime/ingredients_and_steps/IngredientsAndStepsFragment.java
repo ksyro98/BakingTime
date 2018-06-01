@@ -7,7 +7,6 @@ import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -27,16 +26,13 @@ public class IngredientsAndStepsFragment extends Fragment implements Ingredients
     @BindView(R.id.ingredients_and_steps_recycler_view) RecyclerView ingredientsAndStepsRecyclerView;
 
     private Recipe recipe;
-    private static final String TAG = IngredientsAndStepsFragment.class.getSimpleName();
-    public static final String INTENT_RECIPE = "recipe";
-    public static final String INTENT_POSITION = "position";
     private boolean smallScreen;
     private Fragment fragment;
-    public static final String DETAIL_FRAGMENT_TAG = "Detail_Fragment_Tag";
     private SendStepId callback;
-    //private Bundle fragmentBundle;
-    //private int position;
-    //private static final String SAVED_INSTANCE_INT_KEY = "int_key";
+    public static final String INTENT_RECIPE = "recipe";
+    public static final String INTENT_POSITION = "position";
+    public static final String DETAIL_FRAGMENT_TAG = "Detail_Fragment_Tag";
+
 
 
     @Override
@@ -46,23 +42,20 @@ public class IngredientsAndStepsFragment extends Fragment implements Ingredients
         ButterKnife.bind(this, view);
 
 
+        //a RecyclerView is created
         LinearLayoutManager linearLayoutManager = new LinearLayoutManager(getContext());
         ingredientsAndStepsRecyclerView.setLayoutManager(linearLayoutManager);
         ingredientsAndStepsRecyclerView.setHasFixedSize(false);
 
-        if(recipe != null)
-            Log.d(TAG, recipe.getName());
-
         IngredientsAndStepsAdapter ingredientsAndStepsAdapter = new IngredientsAndStepsAdapter(recipe, this);
         ingredientsAndStepsRecyclerView.setAdapter(ingredientsAndStepsAdapter);
-
-        //if(savedInstanceState != null){
-            //addDetailFragment(position);
-        //}
 
         return view;
     }
 
+    /**
+     * setters
+     */
     public void setRecipe(Recipe recipe){
         this.recipe = recipe;
     }
@@ -75,14 +68,13 @@ public class IngredientsAndStepsFragment extends Fragment implements Ingredients
         this.fragment = fragment;
     }
 
-    //public void setFragmentBundle(Bundle fragmentBundle){
-        //this.fragmentBundle = fragmentBundle;
-    //}
 
+    /**
+     * On a small screen device, when an item is clicked the detail activity is launched.
+     * On a large screen device, when an item is clicked the Fragment in the detail section of the master-detail flow changes.
+     */
     @Override
     public void onItemClick(int position) {
-        //this.position = position;
-
         if(smallScreen) {
             Intent intent = new Intent(getActivity(), DetailsActivity.class);
             intent.putExtra(INTENT_RECIPE, (Parcelable) recipe);
@@ -94,6 +86,10 @@ public class IngredientsAndStepsFragment extends Fragment implements Ingredients
         }
     }
 
+    /**
+     * A new Fragment replaces the previous Fragment based on the position of the item clicked.
+     * In addition the id of this Fragment is passed to the activity that contains the Fragment.
+     */
     private void addDetailFragment(int position){
         if(position == 0){
             fragment = new IngredientsFragment();
@@ -121,24 +117,12 @@ public class IngredientsAndStepsFragment extends Fragment implements Ingredients
         catch (ClassCastException e){
             e.printStackTrace();
         }
-        //((IngredientsAndStepsActivity) getActivity()).setStepId(position-1);
     }
 
+    /**
+     * An Interface used to pass the id of the step clicked to the activity that contains the Fragment.
+     */
     public interface SendStepId{
         void setStepId(int stepId);
     }
-
-    /*@Override
-    public void onSaveInstanceState(Bundle outState) {
-        FragmentManager fragmentManager = getActivity().getSupportFragmentManager();
-        fragmentManager.beginTransaction()
-                .remove(fragment)
-                .commit();
-
-        Log.d(TAG, "onSaveInstanceState in fragment");
-
-        outState.putInt(SAVED_INSTANCE_INT_KEY, position);
-
-        super.onSaveInstanceState(outState);
-    }*/
 }
