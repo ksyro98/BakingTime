@@ -1,4 +1,4 @@
-package com.example.dell.bakingtime;
+package com.example.dell.bakingtime.main;
 
 
 import android.content.Context;
@@ -8,7 +8,8 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
 
-import com.example.dell.bakingtime.Recipe.Recipe;
+import com.example.dell.bakingtime.R;
+import com.example.dell.bakingtime.recipe.Recipe;
 
 import java.util.ArrayList;
 

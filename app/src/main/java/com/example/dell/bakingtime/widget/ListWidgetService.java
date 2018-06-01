@@ -1,6 +1,5 @@
-package com.example.dell.bakingtime;
+package com.example.dell.bakingtime.widget;
 
-import android.app.PendingIntent;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Parcelable;
@@ -8,7 +7,8 @@ import android.util.Log;
 import android.widget.RemoteViews;
 import android.widget.RemoteViewsService;
 
-import com.example.dell.bakingtime.Recipe.Recipe;
+import com.example.dell.bakingtime.R;
+import com.example.dell.bakingtime.recipe.Recipe;
 import com.example.dell.bakingtime.ingredients_and_steps.IngredientsAndStepsActivity;
 
 import java.io.FileInputStream;

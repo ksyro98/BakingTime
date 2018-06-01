@@ -7,16 +7,17 @@
 
 
     <FrameLayout
+        android:id="@+id/ingredients_steps_list_container"
         android:layout_width="0dp"
         android:layout_height="match_parent"
         android:layout_weight="2.5"
         android:layout_margin="4dp">
 
-        <fragment
-            android:id="@+id/ingredients_steps_list_fragment"
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:name="com.example.dell.bakingtime.ingredients_and_steps.IngredientsAndStepsFragment"/>
+        <!--<fragment-->
+            <!--android:id="@+id/ingredients_steps_list_fragment"-->
+            <!--android:layout_width="match_parent"-->
+            <!--android:layout_height="match_parent"-->
+            <!--android:name="com.example.dell.bakingtime.ingredients_and_steps.IngredientsAndStepsFragment"/>-->
 
     </FrameLayout>
 

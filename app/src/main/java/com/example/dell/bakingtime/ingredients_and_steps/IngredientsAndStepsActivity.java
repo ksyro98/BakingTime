@@ -4,6 +4,7 @@ import android.appwidget.AppWidgetManager;
 import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
+import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.NavUtils;
 import android.support.v7.app.ActionBar;
@@ -14,13 +15,13 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.widget.Toast;
 
-import com.example.dell.bakingtime.IngredientsWidgetProvider;
-import com.example.dell.bakingtime.ListWidgetService;
-import com.example.dell.bakingtime.MainActivity;
+import com.example.dell.bakingtime.details.IngredientsFragment;
+import com.example.dell.bakingtime.widget.IngredientsWidgetProvider;
+import com.example.dell.bakingtime.widget.ListWidgetService;
 import com.example.dell.bakingtime.R;
-import com.example.dell.bakingtime.Recipe.Recipe;
-import com.example.dell.bakingtime.StepFragment;
-import com.example.dell.bakingtime.ingredients_list.IngredientsFragment;
+import com.example.dell.bakingtime.recipe.Recipe;
+import com.example.dell.bakingtime.details.StepFragment;
+import com.example.dell.bakingtime.main.MainActivity;
 
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
@@ -28,15 +29,23 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
+import java.time.LocalDate;
 
 public class IngredientsAndStepsActivity extends AppCompatActivity
         implements IngredientsFragment.OnButtonClickListenerIngredients,
-        StepFragment.OnButtonClickListenerStep{
+        StepFragment.OnButtonClickListenerStep,
+        IngredientsAndStepsFragment.SendStepId{
 
     private static final String TAG = IngredientsAndStepsActivity.class.getSimpleName();
     private Recipe recipe;
     private boolean isFavorite = false;
+    private IngredientsAndStepsFragment ingredientsAndStepsFragment;
+    private Fragment fragment;
+    private static final String SAVED_INSTANCE_STRING_KEY = "string_key";
+    private static final String ROTATION = "rotation is done";
+    private static final String SAVED_INSTANCE_INT_KEY = "int_key";
     public static final String FILE_NAME = "favorite_recipe_file";
+    private int stepId = -1;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -50,9 +59,10 @@ public class IngredientsAndStepsActivity extends AppCompatActivity
                 recipe = intent.getParcelableExtra(ListWidgetService.INTENT_RECIPE);
             }
 
-            IngredientsAndStepsFragment ingredientsAndStepsFragment = new IngredientsAndStepsFragment();
+            ingredientsAndStepsFragment = new IngredientsAndStepsFragment();
             ingredientsAndStepsFragment.setRecipe(recipe);
-            ingredientsAndStepsFragment.setSmallScreen(findViewById(R.id.detail_container) == null);
+            ingredientsAndStepsFragment.setSmallScreen(isSmallScreen());
+            ingredientsAndStepsFragment.setFragment(fragment);
 
             if (recipe != null) {
                 ActionBar actionBar = getSupportActionBar();
@@ -68,25 +78,44 @@ public class IngredientsAndStepsActivity extends AppCompatActivity
 
             FragmentManager fragmentManager = getSupportFragmentManager();
             fragmentManager.beginTransaction()
-                    .add(R.id.ingredients_steps_list_fragment, ingredientsAndStepsFragment)
+                    .add(R.id.ingredients_steps_list_container, ingredientsAndStepsFragment)
                     .commit();
+
+
+            if(!isSmallScreen()){
+                if(savedInstanceState == null) {
+                    fragment = new IngredientsFragment();
+                    ((IngredientsFragment) fragment).setIngredients(recipe.getIngredients());
+                    ((IngredientsFragment) fragment).setSmallScreen(false);
+
+                    fragmentManager.beginTransaction()
+                            .add(R.id.detail_container, fragment)
+                            .commit();
+                }
+                else{
+                    stepId = savedInstanceState.getInt(SAVED_INSTANCE_INT_KEY);
+                    if(stepId == -1) {
+                        fragment = new IngredientsFragment();
+                        ((IngredientsFragment) fragment).setIngredients(recipe.getIngredients());
+                        ((IngredientsFragment) fragment).setSmallScreen(false);
+
+                        fragmentManager.beginTransaction()
+                                .replace(R.id.detail_container, fragment)
+                                .commit();
+                    }
+                    else{
+                        fragment = new StepFragment();
+                        ((StepFragment) fragment).setPosition(stepId);
+                        ((StepFragment) fragment).setStep(recipe.getSteps().get(stepId));
+                        ((StepFragment) fragment).setIsLastStep(stepId == recipe.getSteps().size()-1);
+                        ((StepFragment) fragment).setSmallScreen(false);
+                    }
+                }
+            }
         }
         else {
             Toast.makeText(this, "Error!", Toast.LENGTH_SHORT).show();
         }
-
-
-        if(findViewById(R.id.detail_container) != null){
-            IngredientsFragment ingredientsFragment = new IngredientsFragment();
-            ingredientsFragment.setIngredients(recipe.getIngredients());
-            ingredientsFragment.setSmallScreen(false);
-
-            FragmentManager fragmentManager = getSupportFragmentManager();
-            fragmentManager.beginTransaction()
-                    .add(R.id.detail_container, ingredientsFragment)
-                    .commit();
-        }
-
     }
 
     @Override
@@ -177,6 +206,34 @@ public class IngredientsAndStepsActivity extends AppCompatActivity
         appWidgetManager.notifyAppWidgetViewDataChanged(appWidgetIds, R.id.list_view);
     }
 
+    private boolean isSmallScreen(){
+        return findViewById(R.id.detail_container) == null;
+    }
+
+    //public void setStepId(int stepId){
+        //this.stepId = stepId;
+    //}
+
+    @Override
+    protected void onSaveInstanceState(Bundle outState) {
+        FragmentManager fragmentManager = getSupportFragmentManager();
+        fragmentManager.beginTransaction()
+                .remove(ingredientsAndStepsFragment)
+                .commit();
+
+        if(!isSmallScreen()){
+            outState.putInt(SAVED_INSTANCE_INT_KEY, stepId);
+
+            fragmentManager.beginTransaction()
+                    .remove(fragment)
+                    .commit();
+        }
+
+        outState.putString(SAVED_INSTANCE_STRING_KEY, ROTATION);
+
+        super.onSaveInstanceState(outState);
+    }
+
     @Override
     public void onButtonClickIngredients() {
 
@@ -185,5 +242,10 @@ public class IngredientsAndStepsActivity extends AppCompatActivity
     @Override
     public void onButtonClickStep(int position) {
 
+    }
+
+    @Override
+    public void setStepId(int stepId) {
+        this.stepId = stepId;
     }
 }

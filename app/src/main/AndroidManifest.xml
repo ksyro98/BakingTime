@@ -12,7 +12,7 @@
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
 
-        <activity android:name=".MainActivity">
+        <activity android:name=".main.MainActivity">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
@@ -22,13 +22,13 @@
 
         <activity
             android:name=".ingredients_and_steps.IngredientsAndStepsActivity"
-            android:parentActivityName=".MainActivity"/>
+            android:parentActivityName=".main.MainActivity"/>
 
         <activity
-            android:name=".DetailsActivity"
+            android:name=".details.DetailsActivity"
             android:parentActivityName=".ingredients_and_steps.IngredientsAndStepsActivity"/>
 
-        <receiver android:name=".IngredientsWidgetProvider">
+        <receiver android:name=".widget.IngredientsWidgetProvider">
             <intent-filter>
                 <action android:name="android.appwidget.action.APPWIDGET_UPDATE" />
             </intent-filter>
@@ -39,7 +39,7 @@
         </receiver>
 
         <service
-            android:name=".ListWidgetService"
+            android:name=".widget.ListWidgetService"
             android:permission="android.permission.BIND_REMOTEVIEWS"/>
 
     </application>

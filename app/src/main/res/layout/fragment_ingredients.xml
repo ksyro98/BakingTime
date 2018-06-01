@@ -4,7 +4,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="vertical"
-    tools:context="com.example.dell.bakingtime.ingredients_list.IngredientsFragment">
+    tools:context="com.example.dell.bakingtime.details.IngredientsFragment">
 
     <android.support.v7.widget.RecyclerView
         android:id="@+id/ingredients_recycler_view"

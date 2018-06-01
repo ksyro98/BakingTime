@@ -1,9 +1,9 @@
-package com.example.dell.bakingtime.Utils;
+package com.example.dell.bakingtime.utils;
 
 
-import com.example.dell.bakingtime.Recipe.Ingredient;
-import com.example.dell.bakingtime.Recipe.Recipe;
-import com.example.dell.bakingtime.Recipe.Step;
+import com.example.dell.bakingtime.recipe.Ingredient;
+import com.example.dell.bakingtime.recipe.Recipe;
+import com.example.dell.bakingtime.recipe.Step;
 
 import org.json.JSONArray;
 import org.json.JSONException;

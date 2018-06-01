@@ -1,13 +1,9 @@
-package com.example.dell.bakingtime.Recipe;
+package com.example.dell.bakingtime.recipe;
 
 import android.os.Parcel;
 import android.os.Parcelable;
-import android.support.annotation.IntDef;
 
 import java.io.Serializable;
-import java.lang.annotation.Retention;
-import java.lang.annotation.RetentionPolicy;
-import java.util.Objects;
 
 public class Ingredient implements Parcelable, Serializable{
 

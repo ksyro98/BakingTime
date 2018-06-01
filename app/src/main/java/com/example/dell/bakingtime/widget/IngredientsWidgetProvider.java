@@ -1,4 +1,4 @@
-package com.example.dell.bakingtime;
+package com.example.dell.bakingtime.widget;
 
 import android.app.PendingIntent;
 import android.appwidget.AppWidgetManager;
@@ -7,7 +7,9 @@ import android.content.Context;
 import android.content.Intent;
 import android.widget.RemoteViews;
 
+import com.example.dell.bakingtime.R;
 import com.example.dell.bakingtime.ingredients_and_steps.IngredientsAndStepsActivity;
+import com.example.dell.bakingtime.widget.ListWidgetService;
 
 
 public class IngredientsWidgetProvider extends AppWidgetProvider {

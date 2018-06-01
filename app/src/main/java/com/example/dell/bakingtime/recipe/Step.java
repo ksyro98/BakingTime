@@ -1,4 +1,4 @@
-package com.example.dell.bakingtime.Recipe;
+package com.example.dell.bakingtime.recipe;
 
 import android.os.Parcel;
 import android.os.Parcelable;

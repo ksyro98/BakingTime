@@ -9,7 +9,7 @@ import android.view.ViewGroup;
 import android.widget.TextView;
 
 import com.example.dell.bakingtime.R;
-import com.example.dell.bakingtime.Recipe.Recipe;
+import com.example.dell.bakingtime.recipe.Recipe;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
@@ -17,14 +17,14 @@ import butterknife.ButterKnife;
 public class IngredientsAndStepsAdapter
         extends RecyclerView.Adapter<IngredientsAndStepsAdapter.IngredientsAndStepsViewHolder>{
 
-    private Context context;
+    //private Context context;
     private Recipe recipe;
     private ClickListener clickListener;
-    private static final String TAG = IngredientsAndStepsAdapter.class.getSimpleName();
+    //private static final String TAG = IngredientsAndStepsAdapter.class.getSimpleName();
 
 
-    public IngredientsAndStepsAdapter(Context context, Recipe recipe, ClickListener clickListener){
-        this.context = context;
+    IngredientsAndStepsAdapter(Recipe recipe, ClickListener clickListener){
+        //this.context = context;
         this.recipe = recipe;
         this.clickListener = clickListener;
     }
@@ -63,7 +63,7 @@ public class IngredientsAndStepsAdapter
 
         @BindView(R.id.recycler_view_text_view) TextView ingredientsAndStepsTextView;
 
-        public IngredientsAndStepsViewHolder(View itemView) {
+        IngredientsAndStepsViewHolder(View itemView) {
             super(itemView);
             itemView.setOnClickListener(this);
 

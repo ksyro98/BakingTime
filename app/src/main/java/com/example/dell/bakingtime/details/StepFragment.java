@@ -1,11 +1,10 @@
-package com.example.dell.bakingtime;
+package com.example.dell.bakingtime.details;
 import android.content.Context;
 import android.net.Uri;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v4.media.session.MediaSessionCompat;
 import android.support.v4.media.session.PlaybackStateCompat;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -14,21 +13,16 @@ import android.widget.LinearLayout;
 import android.widget.TextView;
 
 
-import com.example.dell.bakingtime.Recipe.Step;
+import com.example.dell.bakingtime.R;
+import com.example.dell.bakingtime.recipe.Step;
 import com.google.android.exoplayer2.DefaultLoadControl;
 import com.google.android.exoplayer2.DefaultRenderersFactory;
-import com.google.android.exoplayer2.ExoPlaybackException;
-import com.google.android.exoplayer2.ExoPlayer;
 import com.google.android.exoplayer2.ExoPlayerFactory;
-import com.google.android.exoplayer2.PlaybackParameters;
 import com.google.android.exoplayer2.Player;
 import com.google.android.exoplayer2.SimpleExoPlayer;
-import com.google.android.exoplayer2.Timeline;
 import com.google.android.exoplayer2.source.ExtractorMediaSource;
 import com.google.android.exoplayer2.source.MediaSource;
-import com.google.android.exoplayer2.source.TrackGroupArray;
 import com.google.android.exoplayer2.trackselection.DefaultTrackSelector;
-import com.google.android.exoplayer2.trackselection.TrackSelectionArray;
 import com.google.android.exoplayer2.ui.PlayerView;
 import com.google.android.exoplayer2.upstream.DefaultHttpDataSourceFactory;
 import com.google.android.exoplayer2.util.Util;
@@ -56,14 +50,18 @@ public class StepFragment extends Fragment{
     private MediaSessionCompat mediaSessionCompat;
     private ComponentListener componentListener = new ComponentListener();
     private boolean smallScreen;
-
-    public final static String TAG = StepFragment.class.getSimpleName();
+    private static final String BUNDLE_KEY_STEP = "step";
+    public static final String TAG = StepFragment.class.getSimpleName();
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_step, container, false);
 
         ButterKnife.bind(this, view);
+
+        if(step == null){
+            step = savedInstanceState.getParcelable(BUNDLE_KEY_STEP);
+        }
 
         descriptionTextView.setText(step.getLongDescription());
 
@@ -73,6 +71,7 @@ public class StepFragment extends Fragment{
             hideButtons();
         }
         else {
+            showButtons();
             stepPreviousButton.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View view) {
@@ -224,6 +223,12 @@ public class StepFragment extends Fragment{
         }
     }
 
+    @Override
+    public void onSaveInstanceState(Bundle outState) {
+        outState.putParcelable(BUNDLE_KEY_STEP, step);
+        super.onSaveInstanceState(outState);
+    }
+
     private class MySessionCallback extends MediaSessionCompat.Callback {
         @Override
         public void onPlay() {
@@ -272,6 +277,10 @@ public class StepFragment extends Fragment{
         stepNextButton.setVisibility(View.VISIBLE);
         stepPreviousButton.setVisibility(View.VISIBLE);
         linearLayout.setVisibility(View.VISIBLE);
+    }
+
+    public int getStepId(){
+        return step.getId();
     }
 }
 

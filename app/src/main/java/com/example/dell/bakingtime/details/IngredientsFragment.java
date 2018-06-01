@@ -1,4 +1,4 @@
-package com.example.dell.bakingtime.ingredients_list;
+package com.example.dell.bakingtime.details;
 
 import android.content.Context;
 import android.os.Bundle;
@@ -11,8 +11,8 @@ import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.LinearLayout;
 
+import com.example.dell.bakingtime.recipe.Ingredient;
 import com.example.dell.bakingtime.R;
-import com.example.dell.bakingtime.Recipe.Ingredient;
 
 import java.util.ArrayList;
 
