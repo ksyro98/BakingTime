@@ -143,15 +143,8 @@ public class DetailsActivity extends AppCompatActivity implements
     }
 
 
-    /**
-     * The fragments are removed to avoid having the same Fragment many times when the device is rotated.
-     */
     @Override
     protected void onSaveInstanceState(Bundle outState) {
-        //FragmentManager fragmentManager = getSupportFragmentManager();
-        //fragmentManager.beginTransaction()
-          //      .remove(fragment)
-            //    .commit();
         outState.putInt(SAVED_INSTANCE_INT_KEY, 0);
         super.onSaveInstanceState(outState);
     }

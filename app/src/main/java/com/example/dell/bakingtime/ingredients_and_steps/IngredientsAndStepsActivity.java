@@ -269,10 +269,6 @@ public class IngredientsAndStepsActivity extends AppCompatActivity
     }
 
 
-    /**
-     * The fragments are removed to avoid having the same Fragment many times when the device is rotated.
-     * Also the id of the step which is visible is stored in the outState (-1 is stored if the IngredientFragment is visible).
-     */
     @Override
     protected void onSaveInstanceState(Bundle outState) {
         if(!smallScreen){
