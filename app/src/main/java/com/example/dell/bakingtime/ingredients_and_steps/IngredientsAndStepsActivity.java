@@ -6,6 +6,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
+import android.support.v4.app.FragmentTransaction;
 import android.support.v4.app.NavUtils;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
@@ -91,6 +92,10 @@ public class IngredientsAndStepsActivity extends AppCompatActivity
                 FragmentManager fragmentManager = getSupportFragmentManager();
                 //savedInstanceState == null when the activity is first lunched, in this case the IngredientFragment is displayed
                 if(savedInstanceState == null) {
+                    fragmentManager.beginTransaction()
+                            .add(R.id.ingredients_steps_list_container, ingredientsAndStepsFragment)
+                            .commit();
+
                     fragment = new IngredientsFragment();
                     ((IngredientsFragment) fragment).setIngredients(recipe.getIngredients());
                     ((IngredientsFragment) fragment).setSmallScreen(false);
@@ -103,6 +108,11 @@ public class IngredientsAndStepsActivity extends AppCompatActivity
                 //this is happens because the id of the current step is stored on the savedInstanceState (-1 is stored if IngredientsFragment was the Fragment displayed before destruction)
                 else{
                     stepId = savedInstanceState.getInt(SAVED_INSTANCE_INT_KEY);
+
+                    fragmentManager.beginTransaction()
+                            .add(R.id.ingredients_steps_list_container, ingredientsAndStepsFragment)
+                            .commit();
+
                     if(stepId == -1) {
                         fragment = new IngredientsFragment();
                         ((IngredientsFragment) fragment).setIngredients(recipe.getIngredients());
@@ -119,6 +129,21 @@ public class IngredientsAndStepsActivity extends AppCompatActivity
                         ((StepFragment) fragment).setIsLastStep(stepId == recipe.getSteps().size()-1);
                         ((StepFragment) fragment).setSmallScreen(false);
                     }
+                }
+            }
+            else{
+                Log.d(TAG, "panda");
+                if(savedInstanceState == null) {
+                    FragmentManager fragmentManager = getSupportFragmentManager();
+                    fragmentManager.beginTransaction()
+                            .add(R.id.ingredients_steps_list_container, ingredientsAndStepsFragment)
+                            .commit();
+                }
+                else{
+                    FragmentManager fragmentManager = getSupportFragmentManager();
+                    fragmentManager.beginTransaction()
+                            .add(R.id.ingredients_steps_list_container, ingredientsAndStepsFragment)
+                            .commit();
                 }
             }
         }
@@ -250,18 +275,8 @@ public class IngredientsAndStepsActivity extends AppCompatActivity
      */
     @Override
     protected void onSaveInstanceState(Bundle outState) {
-        FragmentManager fragmentManager = getSupportFragmentManager();
-        fragmentManager.beginTransaction()
-                .remove(ingredientsAndStepsFragment)
-                .commit();
-
-
         if(!smallScreen){
             outState.putInt(SAVED_INSTANCE_INT_KEY, stepId);
-
-            fragmentManager.beginTransaction()
-                    .remove(fragment)
-                    .commit();
         }
 
         outState.putString(SAVED_INSTANCE_STRING_KEY, ROTATION);

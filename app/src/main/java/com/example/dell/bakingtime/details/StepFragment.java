@@ -5,6 +5,7 @@ import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v4.media.session.MediaSessionCompat;
 import android.support.v4.media.session.PlaybackStateCompat;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -50,7 +51,9 @@ public class StepFragment extends Fragment{
     private MediaSessionCompat mediaSessionCompat;
     private ComponentListener componentListener = new ComponentListener();
     private boolean smallScreen;
-    private static final String BUNDLE_KEY_STEP = "step";
+    private static final String SAVED_INSTANCE_PARCELABLE_KEY = "parcelable_key";
+    private static final String SAVED_INSTANCE_LONG_KEY = "long_key";
+    private static final String SAVED_INSTANCE_BOOLEAN_KEY = "boolean_key";
     public static final String TAG = StepFragment.class.getSimpleName();
 
     @Override
@@ -59,14 +62,23 @@ public class StepFragment extends Fragment{
 
         boolean isPortrait = !(view.findViewById(R.id.description_text_view) == null);
 
+        if (step == null) {
+            if(savedInstanceState != null) {
+                step = savedInstanceState.getParcelable(SAVED_INSTANCE_PARCELABLE_KEY);
+            }
+        }
+
+        if(savedInstanceState != null){
+            playbackPosition = savedInstanceState.getLong(SAVED_INSTANCE_LONG_KEY);
+            playWhenReady = savedInstanceState.getBoolean(SAVED_INSTANCE_BOOLEAN_KEY);
+        }
+
         //if the device is in portrait mode the ExoPlayer is displayed with a textView containing a description of the step
         //and the next and previous buttons
         if(isPortrait) {
             ButterKnife.bind(this, view);
 
-            if (step == null) {
-                step = savedInstanceState.getParcelable(BUNDLE_KEY_STEP);
-            }
+
 
             descriptionTextView.setText(step.getLongDescription());
 
@@ -95,13 +107,10 @@ public class StepFragment extends Fragment{
                     });
                 }
             }
-
-            initializePlayer();
         }
         //if the device is in landscape only the ExoPlayer is displayed in full screen
         else{
             playerView = view.findViewById(R.id.player_view);
-            initializePlayer();
         }
 
         return view;
@@ -163,6 +172,7 @@ public class StepFragment extends Fragment{
                     new DefaultTrackSelector(), new DefaultLoadControl());
             playerView.setPlayer(player);
             player.setPlayWhenReady(playWhenReady);
+            Log.d(TAG, String.valueOf(playbackPosition));
             player.seekTo(currentWindow, playbackPosition);
             player.addListener(componentListener);
 
@@ -192,6 +202,13 @@ public class StepFragment extends Fragment{
 
     /**
      * These methods are override to initialize or release the ExoPlayer.
+     * Code for overriding these 4 methods was taken from: https://codelabs.developers.google.com/codelabs/exoplayer-intro/index.html?index=..%2F..%2Findex#2
+     *      (this resource was also used as a guide for other parts of the ExoPlayer implementation)
+     * I override 4 methods to initialize/release the ExoPlayer because:
+     *      "Starting with API level 24 Android supports multiple windows.
+     *       As our app can be visible but not active in split window mode, we need to initialize the player in onStart.
+     *       Before API level 24 we wait as long as possible until we grab resources, so we wait until onResume before
+     *       initializing the player."
      */
     @Override
     public void onStart() {
@@ -237,7 +254,9 @@ public class StepFragment extends Fragment{
 
     @Override
     public void onSaveInstanceState(Bundle outState) {
-        outState.putParcelable(BUNDLE_KEY_STEP, step);
+        outState.putParcelable(SAVED_INSTANCE_PARCELABLE_KEY, step);
+        outState.putLong(SAVED_INSTANCE_LONG_KEY, player.getCurrentPosition());
+        outState.putBoolean(SAVED_INSTANCE_BOOLEAN_KEY, player.getPlayWhenReady());
         super.onSaveInstanceState(outState);
     }
 
