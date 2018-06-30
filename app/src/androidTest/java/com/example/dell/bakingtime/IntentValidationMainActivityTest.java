@@ -43,8 +43,6 @@ public class IntentValidationMainActivityTest {
 
     @Before
     public void registerIdlingResource(){
-        Log.d(TAG, "@Before running!");
-
         idlingResource = intentsTestRule.getActivity().getIdlingResource();
         idlingRegistry = IdlingRegistry.getInstance();
         idlingRegistry.register(idlingResource);
@@ -52,15 +50,11 @@ public class IntentValidationMainActivityTest {
 
     @Before
     public void stubAllExternalIntents(){
-        Log.d(TAG, "@Before 2 running!");
-
         intending(not(isInternal())).respondWith(new Instrumentation.ActivityResult(Activity.RESULT_OK, null));
     }
 
     @Test
     public void intentValidationTest(){
-        Log.d(TAG, "@Test running!");
-
         onView(withId(R.id.baking_recycler_view)).perform(RecyclerViewActions.actionOnItemAtPosition(0, click()));
         Recipe recipe = intentsTestRule.getActivity().getRecipeClicked();
         intended(allOf(hasExtra(MainActivity.INTENT_RECIPE, (Parcelable) recipe)));
@@ -68,8 +62,6 @@ public class IntentValidationMainActivityTest {
 
     @After
     public void unregisterIdlingResource(){
-        Log.d(TAG, "@After running!");
-
         idlingRegistry.unregister(idlingResource);
     }
 }
