@@ -9,6 +9,7 @@ import android.support.test.espresso.IdlingResource;
 import android.support.test.espresso.contrib.RecyclerViewActions;
 import android.support.test.espresso.intent.rule.IntentsTestRule;
 import android.support.test.runner.AndroidJUnit4;
+import android.util.Log;
 
 import com.example.dell.bakingtime.main.MainActivity;
 import com.example.dell.bakingtime.recipe.Recipe;
@@ -37,9 +38,13 @@ public class IntentValidationMainActivityTest {
 
     private IdlingResource idlingResource;
     private IdlingRegistry idlingRegistry;
+    private static final String TAG = IntentValidationMainActivityTest.class.getSimpleName();
+
 
     @Before
     public void registerIdlingResource(){
+        Log.d(TAG, "@Before running!");
+
         idlingResource = intentsTestRule.getActivity().getIdlingResource();
         idlingRegistry = IdlingRegistry.getInstance();
         idlingRegistry.register(idlingResource);
@@ -47,11 +52,15 @@ public class IntentValidationMainActivityTest {
 
     @Before
     public void stubAllExternalIntents(){
+        Log.d(TAG, "@Before 2 running!");
+
         intending(not(isInternal())).respondWith(new Instrumentation.ActivityResult(Activity.RESULT_OK, null));
     }
 
     @Test
     public void intentValidationTest(){
+        Log.d(TAG, "@Test running!");
+
         onView(withId(R.id.baking_recycler_view)).perform(RecyclerViewActions.actionOnItemAtPosition(0, click()));
         Recipe recipe = intentsTestRule.getActivity().getRecipeClicked();
         intended(allOf(hasExtra(MainActivity.INTENT_RECIPE, (Parcelable) recipe)));
@@ -59,6 +68,8 @@ public class IntentValidationMainActivityTest {
 
     @After
     public void unregisterIdlingResource(){
+        Log.d(TAG, "@After running!");
+
         idlingRegistry.unregister(idlingResource);
     }
 }
