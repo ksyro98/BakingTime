@@ -38,8 +38,6 @@ public class IntentValidationMainActivityTest {
 
     private IdlingResource idlingResource;
     private IdlingRegistry idlingRegistry;
-    private static final String TAG = IntentValidationMainActivityTest.class.getSimpleName();
-
 
     @Before
     public void registerIdlingResource(){
